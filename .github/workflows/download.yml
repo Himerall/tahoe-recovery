@@ -12,6 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check available disk space
+        run: df -h
+      
+      - name: Cleanup before image creation
+        run: |
+          sudo rm -rf /tmp/*
+          sudo rm -rf /Volumes/Tahoe/*
 
       - name: Download macOS Installer
         run: |
@@ -23,7 +30,7 @@ jobs:
 
       - name: Generate macOS Installer
         run: |
-          sudo hdiutil create -o /tmp/Tahoe -size 20000m -volname 'Tahoe' -layout SPUD -fs HFS+J
+          sudo hdiutil create -o /tmp/Tahoe -size 15000m -volname 'Tahoe' -layout SPUD -fs HFS+J
           sudo hdiutil attach /tmp/Tahoe.dmg -noverify -mountpoint /Volumes/Tahoe
           sleep 10
           sudo /Applications/'Install macOS Beta'.app/Contents/Resources/createinstallmedia --volume /Volumes/Tahoe --nointeraction

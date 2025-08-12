@@ -4,7 +4,7 @@ echo "Monitoring workflow execution..."
 echo "Press Ctrl+C to stop monitoring"
 echo ""
 
-RUN_ID="16907246980"
+RUN_ID="16907356204"
 
 while true; do
     STATUS=$(gh run view $RUN_ID --json status | grep -o '"status":"[^"]*"' | cut -d'"' -f4)

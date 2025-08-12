@@ -17,8 +17,18 @@ jobs:
       
       - name: Cleanup before image creation
         run: |
+          # Remove temporary files
           sudo rm -rf /tmp/*
-          sudo rm -rf /Volumes/Tahoe/*
+          sudo rm -rf /Volumes/Tahoe/* || true
+          # Remove brew cache
+          brew cleanup --prune=all || true
+          # Remove Xcode simulators cache
+          sudo rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport/* || true
+          sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/* || true
+          # Remove Docker if present
+          sudo rm -rf /var/lib/docker/* || true
+          # Check available space after cleanup
+          df -h
 
       - name: Download macOS Installer
         run: |
@@ -27,10 +37,13 @@ jobs:
       - name: Install the assistant
         run: |
           sudo installer -pkg /tmp/InstallAssistant.pkg -target /
+          # Remove the installer package to save space
+          rm -f /tmp/InstallAssistant.pkg
+          df -h
 
       - name: Generate macOS Installer
         run: |
-          sudo hdiutil create -o /tmp/Tahoe -size 15000m -volname 'Tahoe' -layout SPUD -fs HFS+J
+          sudo hdiutil create -o /tmp/Tahoe -size 20000m -volname 'Tahoe' -layout SPUD -fs HFS+J
           sudo hdiutil attach /tmp/Tahoe.dmg -noverify -mountpoint /Volumes/Tahoe
           sleep 10
           sudo /Applications/'Install macOS Beta'.app/Contents/Resources/createinstallmedia --volume /Volumes/Tahoe --nointeraction
